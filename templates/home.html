@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="/static/css/pages/home.css">
+{% endblock %}
+
+{% block content %}
+
+{% if flash %}
+<div class='noti-banner noti-banner-warning'>
+  <div class="container">
+    <div class="noti-column">
+      <div class='noti-col noti-col-icon'></div>
+      <div class='noti-col noti-col-label'>
+        <div class='noti-bannertype'>
+          {% if status=='error' %}
+          Warning
+          {% elif status=='success' %}
+          Notice
+          {% endif %}
+        </div>
+        <div class='noti-bannertext'>
+          {% if status=='error' %}
+          Uh oh! Be careful!
+          {% elif status=='success' %}
+          Hey! Listen!
+          {% endif %}
+        </div>
+      </div>
+      <div class='noti-banner-text'>
+        {{ flash }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="hero splash p-less is-fullheight-with-navbar" id="home-hero">
+  <div class="container flex">
+    <div class="columns flex-vcenter">
+      <div class="column flex-vcenter flex-lcenter is-size-2-desktop is-size-1-fullhd" id="title">
+        <h1 class="title is-spaced is-size-2-desktop is-size-1-fullhd">{{ appName() }}</h1>
+        <h2 class="subtitle">
+          We are an osu! private server built based on the bancho.py as the backend
+          and a frontend based on guweb! Just fell free to play in our server!
+          We would never ban anyone!
+        </h2>
+        {% if not session.authenticated %}
+        <div class="buttons">
+          <a class="button is-primary" href="/register">
+            <strong>Sign up</strong>
+          </a>
+          <a class="button is-light" href="/login">
+            Log in
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      <div class="column flex flex-lcenter" id="mascot">
+        <div class="gulag-avatar"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container has-text-centered py-4">
+    <h2 class="title mb-6">Our Top Players!</h2>
+    <div class="columns has-text-left mb-8">
+      <div class="column is-5">
+        <div class="columns">
+          <div class="column is-2">
+            <i class="image is-128x128 fas fa-archive"></i>
+          </div>
+          <div class="column is-10">
+            <h4 class="title is-spaced is-3">osu! mode</h4>
+            <p class="subtitle is-4">
+              <p>name: </p>
+                {{p1[0]['name']}}
+            </p>
+              <p>pp: </p>
+            <p class="subtitle is-5">
+                {{p1[0]['pp']}}
+            </p>
+              <p>accuracy: </p>
+            <p class="subtitle is-5">
+                {{p1[0]['acc']}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-5">
+        <div class="columns">
+          <div class="column is-2">
+            <i class="image is-128x128 fas fa-archive"></i>
+          </div>
+          <div class="column is-10">
+            <h4 class="title is-spaced is-3">taiko mode</h4>
+              <p>name: </p>
+            <p class="subtitle is-4">
+                {{p2[0]['name']}}
+            </p>
+              <p>pp: </p>
+            <p class="subtitle is-5">
+                {{p2[0]['pp']}}
+            </p>
+              <p>accuracy: </p>
+            <p class="subtitle is-5">
+                {{p2[0]['acc']}}
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+    <section class="section">
+  <div class="container has-text-centered py-4">
+    <div class="columns has-text-left mb-8">
+      <div class="column is-5">
+        <div class="columns">
+          <div class="column is-2">
+            <i class="image is-128x128 fas fa-archive"></i>
+          </div>
+          <div class="column is-10">
+            <h4 class="title is-spaced is-3">catch mode</h4>
+              <p>name: </p>
+            <p class="subtitle is-4">
+                {{p3[0]['name']}}
+            </p>
+              <p>pp: </p>
+            <p class="subtitle is-5">
+                {{p3[0]['pp']}}
+            </p>
+              <p>accuracy: </p>
+            <p class="subtitle is-5">
+                {{p3[0]['acc']}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-5">
+        <div class="columns">
+          <div class="column is-2">
+            <i class="image is-128x128 fas fa-archive"></i>
+          </div>
+          <div class="column is-10">
+            <h4 class="title is-spaced is-3">mania mode</h4>
+              <p>name: </p>
+            <p class="subtitle is-4">
+                {{p4[0]['name']}}
+            </p>
+              <p>pp: </p>
+            <p class="subtitle is-5">
+                {{p4[0]['pp']}}
+            </p>
+              <p>accuracy: </p>
+            <p class="subtitle is-5">
+                {{p4[0]['acc']}}
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% if not session.authenticated %}
+<section class="hero splash">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h1 class="title is-spaced">What are you waiting for?</h1>
+      <h2 class="subtitle">Join {{ appName() }}! It's risk-free! You won't get your account banned on official servers
+        if
+        you play here with us! And don't worry, as you can always switch between the official servers and us at any time!</h2>
+      <div class="buttons is-centered"><a class="control button is-primary" href="/register">Sign up for free</a><a
+          class="control button is-light" href="/login">Login</a></div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

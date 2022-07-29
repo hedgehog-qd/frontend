@@ -1,0 +1,327 @@
+<html>
+  <head>
+  <link href="https://api.hedgehog-qd.xyz/webaka/semantic.min.css" rel="stylesheet" type="text/css">
+  <link href="https://api.hedgehog-qd.xyz/webaka/fontstyle.css" rel="stylesheet" type="text/css">
+  <script src="https://api.hedgehog-qd.xyz/webaka/jquery-3.4.1.min.js"></script>
+  <script src="https://api.hedgehog-qd.xyz/webaka/semantic.min.js"></script>
+  <!--Those above are about the theme and must be included-->
+  <title>Leaderboard - Yukiharu</title>
+  <link rel="icon" href="https://api.hedgehog-qd.xyz/webaka/icon.png" type="image/x-icon" />
+  <!--This is the logo of the website-->
+
+</head>
+
+  	<style type="text/css">
+
+        *{
+			padding: 0;
+			margin: 0;
+		}
+		.big_box{
+			background: url('https://api.hedgehog-qd.xyz/webaka/bkgyuki.png');
+			background-size: contain;
+			background-position: right top;
+			background-repeat: no-repeat;
+			background-attachment: fixed;
+			opacity:0.95;
+		}
+        body{
+            font-family: zt;
+        }
+
+
+
+	</style>
+  <!-- DO NOT CHANGE THE CSS ABOVE-->
+  <style type="text/css">
+	  .sb{
+		  opacity : 0.8;
+	  }
+  </style>
+
+  <body>
+<div class="big_box">
+	<div class="sb">
+
+  <h1 class="ui header">Leaderboard</h1>
+
+  <div class="ui four item menu" id="mode-menu">
+<a class="active item" data-mode="0" href="/leaderboard?mode=0&sort=pp">osu!</a>
+<a class="item" data-mode="1" href="/leaderboard?mode=1&sort=pp">osu!taiko</a>
+<a class="item" data-mode="2" href="/leaderboard?mode=2&sort=pp">osu!catch</a>
+<a class="item" data-mode="3" href="/leaderboard?mode=3&sort=pp">osu!mania</a>
+</div>
+
+  <div class="ui menu">
+
+    <div class="item">
+      The Top 25 Players
+    </div>
+    <div class="item">
+      {{p1}}
+    </div>
+	  <div class="item">
+      {{p3}}
+    </div>
+  </div>
+
+
+  <div class="h-container">
+  	<div class="ui margined container" id="messages-container">
+  		<noscript>
+  			"This is just a test"
+  		</noscript>
+  	</div>
+
+  	<div class="ui container">
+  		<table class="ui fixed table">
+  			<thead>
+  				<tr>
+  					<th class="two wide">#Rank</th>
+					<th class="one wide">District</th>
+  					<th class="three wide">Players</th>
+  					<th class="three wide">Performance (pp)</th>
+  					<th class="three wide">Accuracy (ac)</th>
+  					<th class="three wide">Playcount</th>
+  				</tr>
+  			</thead>
+  			<tbody>
+  				<tr>
+  					<td>#1</td>
+					<td>{{p2[0]['country']}}</td>
+  					<td>{{p2[0]['name']}}</td>
+  					<td>{{p2[0]['pp']}}</td>
+  					<td>{{p2[0]['acc']}}</td>
+  					<td>{{p2[0]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#2</td>
+  					<td>{{p2[1]['country']}}</td>
+  					<td>{{p2[1]['name']}}</td>
+  					<td>{{p2[1]['pp']}}</td>
+  					<td>{{p2[1]['acc']}}</td>
+  					<td>{{p2[1]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#3</td>
+  					<td>{{p2[2]['country']}}</td>
+  					<td>{{p2[2]['name']}}</td>
+  					<td>{{p2[2]['pp']}}</td>
+  					<td>{{p2[2]['acc']}}</td>
+  					<td>{{p2[2]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#4</td>
+  					<td>{{p2[3]['country']}}</td>
+  					<td>{{p2[3]['name']}}</td>
+  					<td>{{p2[3]['pp']}}</td>
+  					<td>{{p2[3]['acc']}}</td>
+  					<td>{{p2[3]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#5</td>
+					<td>{{p2[4]['country']}}</td>
+  					<td>{{p2[4]['name']}}</td>
+  					<td>{{p2[4]['pp']}}</td>
+  					<td>{{p2[4]['acc']}}</td>
+  					<td>{{p2[4]['plays']}}</td>
+
+  				</tr>
+  				<tr>
+  					<td>#6</td>
+					<td>{{p2[5]['country']}}</td>
+  					<td>{{p2[5]['name']}}</td>
+  					<td>{{p2[5]['pp']}}</td>
+  					<td>{{p2[5]['acc']}}</td>
+  					<td>{{p2[5]['plays']}}</td>
+				</tr>
+  				<tr>
+  					<td>#7</td>
+					<td>{{p2[6]['country']}}</td>
+  					<td>{{p2[6]['name']}}</td>
+  					<td>{{p2[6]['pp']}}</td>
+  					<td>{{p2[6]['acc']}}</td>
+  					<td>{{p2[6]['plays']}}</td>
+
+
+  				</tr>
+  				<tr>
+  					<td>#8</td>
+  					<td>{{p2[7]['country']}}</td>
+					<td>{{p2[7]['name']}}</td>
+					<td>{{p2[7]['pp']}}</td>
+					<td>{{p2[7]['acc']}}</td>
+					<td>{{p2[7]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#9</td>
+  					<td>{{p2[8]['country']}}</td>
+					<td>{{p2[8]['name']}}</td>
+					<td>{{p2[8]['pp']}}</td>
+					<td>{{p2[8]['acc']}}</td>
+					<td>{{p2[8]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#10</td>
+  					<td>{{p2[9]['country']}}</td>
+					<td>{{p2[9]['name']}}</td>
+					<td>{{p2[9]['pp']}}</td>
+					<td>{{p2[9]['acc']}}</td>
+					<td>{{p2[9]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#11</td>
+  					<td>{{p2[10]['country']}}</td>
+					<td>{{p2[10]['name']}}</td>
+					<td>{{p2[10]['pp']}}</td>
+					<td>{{p2[10]['acc']}}</td>
+					<td>{{p2[10]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#12</td>
+  					<td>{{p2[11]['country']}}</td>
+					<td>{{p2[11]['name']}}</td>
+					<td>{{p2[11]['pp']}}</td>
+					<td>{{p2[11]['acc']}}</td>
+					<td>{{p2[11]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#13</td>
+  					<td>{{p2[12]['country']}}</td>
+					<td>{{p2[12]['name']}}</td>
+					<td>{{p2[12]['pp']}}</td>
+					<td>{{p2[12]['acc']}}</td>
+					<td>{{p2[12]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#14</td>
+  					<td>{{p2[13]['country']}}</td>
+					<td>{{p2[13]['name']}}</td>
+					<td>{{p2[13]['pp']}}</td>
+					<td>{{p2[13]['acc']}}</td>
+					<td>{{p2[13]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#15</td>
+  					<td>{{p2[14]['country']}}</td>
+					<td>{{p2[14]['name']}}</td>
+					<td>{{p2[14]['pp']}}</td>
+					<td>{{p2[14]['acc']}}</td>
+					<td>{{p2[14]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#16</td>
+  					<td>{{p2[15]['country']}}</td>
+					<td>{{p2[15]['name']}}</td>
+					<td>{{p2[15]['pp']}}</td>
+					<td>{{p2[15]['acc']}}</td>
+					<td>{{p2[15]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#17</td>
+  					<td>{{p2[16]['country']}}</td>
+					<td>{{p2[16]['name']}}</td>
+					<td>{{p2[16]['pp']}}</td>
+					<td>{{p2[16]['acc']}}</td>
+					<td>{{p2[16]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#18</td>
+  					<td>{{p2[17]['country']}}</td>
+					<td>{{p2[17]['name']}}</td>
+					<td>{{p2[17]['pp']}}</td>
+					<td>{{p2[17]['acc']}}</td>
+					<td>{{p2[17]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#19</td>
+  					<td>{{p2[18]['country']}}</td>
+					<td>{{p2[18]['name']}}</td>
+					<td>{{p2[18]['pp']}}</td>
+					<td>{{p2[18]['acc']}}</td>
+					<td>{{p2[18]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#20</td>
+  					<td>{{p2[19]['country']}}</td>
+					<td>{{p2[19]['name']}}</td>
+					<td>{{p2[19]['pp']}}</td>
+					<td>{{p2[19]['acc']}}</td>
+					<td>{{p2[19]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#21</td>
+  					<td>{{p2[20]['country']}}</td>
+					<td>{{p2[20]['name']}}</td>
+					<td>{{p2[20]['pp']}}</td>
+					<td>{{p2[20]['acc']}}</td>
+					<td>{{p2[20]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#22</td>
+  					<td>{{p2[21]['country']}}</td>
+					<td>{{p2[21]['name']}}</td>
+					<td>{{p2[21]['pp']}}</td>
+					<td>{{p2[21]['acc']}}</td>
+					<td>{{p2[21]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#23</td>
+  					<td>{{p2[22]['country']}}</td>
+					<td>{{p2[22]['name']}}</td>
+					<td>{{p2[22]['pp']}}</td>
+					<td>{{p2[22]['acc']}}</td>
+					<td>{{p2[22]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#24</td>
+  					<td>{{p2[23]['country']}}</td>
+					<td>{{p2[23]['name']}}</td>
+					<td>{{p2[23]['pp']}}</td>
+					<td>{{p2[23]['acc']}}</td>
+					<td>{{p2[23]['plays']}}</td>
+  				</tr>
+  				<tr>
+  					<td>#25</td>
+  					<td>{{p2[24]['country']}}</td>
+					<td>{{p2[24]['name']}}</td>
+					<td>{{p2[24]['pp']}}</td>
+					<td>{{p2[24]['acc']}}</td>
+					<td>{{p2[24]['plays']}}</td>
+  				</tr>
+  			</tbody>
+  		</table>
+  	</div>
+	  </div>
+  </div>
+</div>
+  <div class="ui divider"></div>
+
+  <div class="ui segment">
+  <div class="ui three column very relaxed grid">
+    <div class="column">
+      <p><a href="https://qsu.yukiharu.pw" target="_blank">osu! Yukiharu</a></p>
+      <p><a href="https://github.com/hedgehog-qd" target="_blank">GitHub</a></p>
+      <p> </p>
+      <p> </p>
+    </div>
+	  <div class="ui vertical divider"></div>
+    <div class="column">
+      <p> Server based on:</p>
+      <p><a href="https://github.com/osuAkatsuki/bancho.py" target="_blank">  Bancho.py</a></p>
+      <p> </p>
+      <p> </p>
+    </div>
+	  <div class="ui vertical divider"></div>
+	  <div class="column">
+      <span>osu! Yukiharu</span>
+      <p> </p>
+      <p>Private Server</p>
+      <p> </p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
