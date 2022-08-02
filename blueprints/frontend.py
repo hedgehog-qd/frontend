@@ -20,6 +20,7 @@ from quart import session
 from quart import send_file
 
 from blueprints import json_dealing
+from blueprints.lb import lbfe
 from constants import regexes
 from objects import glob
 from objects import utils
@@ -32,13 +33,16 @@ VALID_MODS = frozenset({'vn', 'rx', 'ap'})
 
 frontend = Blueprint('frontend', __name__)
 
+
 def login_required(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         if not session:
             return await flash('error', 'You must be logged in to access that page.', 'login')
         return await func(*args, **kwargs)
+
     return wrapper
+
 
 @frontend.route('/home')
 @frontend.route('/')
@@ -47,17 +51,20 @@ async def home():
     resupptaiko = json_dealing.DealJson("1", "pp")
     resuppcatch = json_dealing.DealJson("2", "pp")
     resuppmania = json_dealing.DealJson("3", "pp")
-    return await render_template('home.html',p1=resupposu,p2=resupptaiko,p3=resuppcatch,p4=resuppmania)
+    return await render_template('home.html', p1=resupposu, p2=resupptaiko, p3=resuppcatch, p4=resuppmania)
+
 
 @frontend.route('/home/account/edit')
 async def home_account_edit():
     return redirect('/settings/profile')
+
 
 @frontend.route('/settings')
 @frontend.route('/settings/profile')
 @login_required
 async def settings_profile():
     return await render_template('settings/profile.html')
+
 
 @frontend.route('/settings/profile', methods=['POST'])
 @login_required
@@ -75,8 +82,8 @@ async def settings_profile_post():
 
     # no data has changed; deny post
     if (
-        new_name == old_name and
-        new_email == old_email
+            new_name == old_name and
+            new_email == old_email
     ):
         return await flash('error', 'No changes have been made.', 'settings/profile')
 
@@ -134,10 +141,12 @@ async def settings_profile_post():
     session.pop('user_data', None)
     return await flash('success', 'Your username/email have been changed! Please login again.', 'login')
 
+
 @frontend.route('/settings/avatar')
 @login_required
 async def settings_avatar():
     return await render_template('settings/avatar.html')
+
 
 @frontend.route('/settings/avatar', methods=['POST'])
 @login_required
@@ -156,11 +165,12 @@ async def settings_avatar_post():
 
     # bad file extension; deny post
     if not file_extension in ALLOWED_EXTENSIONS:
-        return await flash('error', 'The image you select must be either a .JPG, .JPEG, or .PNG file!', 'settings/avatar')
+        return await flash('error', 'The image you select must be either a .JPG, .JPEG, or .PNG file!',
+                           'settings/avatar')
 
     # remove old avatars
     for fx in ALLOWED_EXTENSIONS:
-        if os.path.isfile(f'{AVATARS_PATH}/{session["user_data"]["id"]}{fx}'): # Checking file e
+        if os.path.isfile(f'{AVATARS_PATH}/{session["user_data"]["id"]}{fx}'):  # Checking file e
             os.remove(f'{AVATARS_PATH}/{session["user_data"]["id"]}{fx}')
 
     # avatar cropping to 1:1
@@ -171,11 +181,13 @@ async def settings_avatar_post():
     pilavatar.save(os.path.join(AVATARS_PATH, f'{session["user_data"]["id"]}{file_extension.lower()}'))
     return await flash('success', 'Your avatar has been successfully changed!', 'settings/avatar')
 
+
 @frontend.route('/settings/custom')
 @login_required
 async def settings_custom():
     profile_customizations = utils.has_profile_customizations(session['user_data']['id'])
     return await render_template('settings/custom.html', customizations=profile_customizations)
+
 
 @frontend.route('/settings/custom', methods=['POST'])
 @login_required
@@ -192,7 +204,9 @@ async def settings_custom_post():
     if banner is not None and banner.filename:
         _, file_extension = os.path.splitext(banner.filename.lower())
         if not file_extension in ALLOWED_EXTENSIONS:
-            return await flash_with_customizations('error', f'The banner you select must be either a .JPG, .JPEG, .PNG or .GIF file!', 'settings/custom')
+            return await flash_with_customizations('error',
+                                                   f'The banner you select must be either a .JPG, .JPEG, .PNG or .GIF file!',
+                                                   'settings/custom')
 
         banner_file_no_ext = os.path.join(f'.data/banners', f'{session["user_data"]["id"]}')
 
@@ -207,7 +221,9 @@ async def settings_custom_post():
     if background is not None and background.filename:
         _, file_extension = os.path.splitext(background.filename.lower())
         if not file_extension in ALLOWED_EXTENSIONS:
-            return await flash_with_customizations('error', f'The background you select must be either a .JPG, .JPEG, .PNG or .GIF file!', 'settings/custom')
+            return await flash_with_customizations('error',
+                                                   f'The background you select must be either a .JPG, .JPEG, .PNG or .GIF file!',
+                                                   'settings/custom')
 
         background_file_no_ext = os.path.join(f'.data/backgrounds', f'{session["user_data"]["id"]}')
 
@@ -219,13 +235,15 @@ async def settings_custom_post():
 
         await background.save(f'{background_file_no_ext}{file_extension}')
 
-    return await flash_with_customizations('success', 'Your customisation has been successfully changed!', 'settings/custom')
+    return await flash_with_customizations('success', 'Your customisation has been successfully changed!',
+                                           'settings/custom')
 
 
 @frontend.route('/settings/password')
 @login_required
 async def settings_password():
     return await render_template('settings/password.html')
+
 
 @frontend.route('/settings/password', methods=["POST"])
 @login_required
@@ -263,18 +281,18 @@ async def settings_password_post():
         'FROM users '
         'WHERE id = %s',
         [session['user_data']['id']])
-    )['pw_bcrypt'].encode()
+                 )['pw_bcrypt'].encode()
 
     pw_md5 = hashlib.md5(old_password.encode()).hexdigest().encode()
 
     # check old password against db
     # intentionally slow, will cache to speed up
     if pw_bcrypt in bcrypt_cache:
-        if pw_md5 != bcrypt_cache[pw_bcrypt]: # ~0.1ms
+        if pw_md5 != bcrypt_cache[pw_bcrypt]:  # ~0.1ms
             if glob.config.debug:
                 log(f"{session['user_data']['name']}'s change pw failed - pw incorrect.", Ansi.LYELLOW)
             return await flash('error', 'Your old password is incorrect.', 'settings/password')
-    else: # ~200ms
+    else:  # ~200ms
         if not bcrypt.checkpw(pw_md5, pw_bcrypt):
             if glob.config.debug:
                 log(f"{session['user_data']['name']}'s change pw failed - pw incorrect.", Ansi.LYELLOW)
@@ -305,8 +323,7 @@ async def settings_password_post():
 
 @frontend.route('/u/<id>')
 async def profile_select(id):
-
-    mode = request.args.get('mode', 'std', type=str) # 1. key 2. default value
+    mode = request.args.get('mode', 'std', type=str)  # 1. key 2. default value
     mods = request.args.get('mods', 'vn', type=str)
     user_data = await glob.db.fetch(
         'SELECT name, safe_name, id, priv, country '
@@ -338,56 +355,19 @@ async def profile_select(id):
 @frontend.route('/lb')
 @frontend.route('/leaderboard/<mode>/<sort>/<mods>')
 @frontend.route('/lb/<mode>/<sort>/<mods>')
-async def leaderboard(mode='osu', sort='pp', mods='vn'):  #把原版Leaderboard重定向到自己的
-    #return await render_template('leaderboard.html', mode=mode, sort=sort, mods=mods)
-    #rdurl = "https://lb.yukiharu.pw/"+"?mode="+mode+"&sort="+sort
-    #return redirect(rdurl)
+async def leaderboard(mode='osu', sort='pp', mods='vn'):  # 把原版Leaderboard重定向到自己的
+    # return await render_template('leaderboard.html', mode=mode, sort=sort, mods=mods)
+    # rdurl = "https://lb.yukiharu.pw/"+"?mode="+mode+"&sort="+sort
+    # return redirect(rdurl)
     if 'mode' and 'sort' in request.args:
         mode = str(request.args['mode'])
         sort = str(request.args['sort'])
     else:
         return redirect('/leaderboard?mode=0&sort=pp')
-    result = json_dealing.DealJson(mode,sort)
+    result = json_dealing.DealJson(mode, sort)
     print(result)
-    if(len(result)<24):
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-','pp': '-', 'plays': '-',  'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-        result.append({'name': 'No Player', 'country': '-', 'tscore': '-', 'pp': '-', 'plays': '-', 'acc': '-'})
-    modeout = ""
-    if(mode == "0"):
-        modeout = "osu! mode"
-    if(mode == "1"):
-        modeout = "osu!taiko mode"
-    if(mode == "2"):
-        modeout = "osu!catch mode"
-    if(mode == "3"):
-        modeout = "osu!mania mode"
-    if(mode !="0" and mode !="1" and mode!="2" and mode!="3"):
-        modeout = "WTF mode it is !!??"
-    return await render_template('leaderboard.html', p1=modeout, p2=result, p3="Order by: "+sort)
+    return await lbfe(result,mode,sort)
+
 
 @frontend.route('/login')
 async def login():
@@ -395,6 +375,7 @@ async def login():
         return await flash('error', "You're already logged in!", 'home')
 
     return await render_template('login.html')
+
 
 @frontend.route('/login', methods=['POST'])
 async def login_post():
@@ -435,11 +416,11 @@ async def login_post():
     # check credentials (password) against db
     # intentionally slow, will cache to speed up
     if pw_bcrypt in bcrypt_cache:
-        if pw_md5 != bcrypt_cache[pw_bcrypt]: # ~0.1ms
+        if pw_md5 != bcrypt_cache[pw_bcrypt]:  # ~0.1ms
             if glob.config.debug:
                 log(f"{username}'s login failed - pw incorrect.", Ansi.LYELLOW)
             return await flash('error', 'Password is incorrect.', 'login')
-    else: # ~200ms
+    else:  # ~200ms
         if not bcrypt.checkpw(pw_md5, pw_bcrypt):
             if glob.config.debug:
                 log(f"{username}'s login failed - pw incorrect.", Ansi.LYELLOW)
@@ -481,6 +462,7 @@ async def login_post():
 
     return await flash('success', f'Hey, welcome back {username}!', 'home')
 
+
 @frontend.route('/register')
 async def register():
     if 'authenticated' in session:
@@ -490,6 +472,7 @@ async def register():
         return await flash('error', 'Registrations are currently disabled.', 'home')
 
     return await render_template('register.html')
+
 
 @frontend.route('/register', methods=['POST'])
 async def register_post():
@@ -510,8 +493,8 @@ async def register_post():
     if glob.config.hCaptcha_sitekey != 'changeme':
         captcha_data = form.get('h-captcha-response', type=str)
         if (
-            captcha_data is None or
-            not await utils.validate_captcha(captcha_data)
+                captcha_data is None or
+                not await utils.validate_captcha(captcha_data)
         ):
             return await flash('error', 'Captcha failed.', 'register')
 
@@ -559,14 +542,14 @@ async def register_post():
     # (start of lock)
     pw_md5 = hashlib.md5(passwd_txt.encode()).hexdigest().encode()
     pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
-    glob.cache['bcrypt'][pw_bcrypt] = pw_md5 # cache pw
+    glob.cache['bcrypt'][pw_bcrypt] = pw_md5  # cache pw
 
     safe_name = utils.get_safe_name(username)
 
     # fetch the users' country
     if (
-        request.headers and
-        (ip := request.headers.get('X-Real-IP', type=str)) is not None
+            request.headers and
+            (ip := request.headers.get('X-Real-IP', type=str)) is not None
     ):
         country = await utils.fetch_geoloc(ip)
     else:
@@ -607,6 +590,7 @@ async def register_post():
     # user has successfully registered
     return await render_template('verify.html')
 
+
 @frontend.route('/logout')
 async def logout():
     if 'authenticated' not in session:
@@ -622,6 +606,7 @@ async def logout():
     # render login
     return await flash('success', 'Successfully logged out!', 'login')
 
+
 # social media redirections
 
 @frontend.route('/github')
@@ -629,27 +614,34 @@ async def logout():
 async def github_redirect():
     return redirect(glob.config.github)
 
+
 @frontend.route('/discord')
 async def discord_redirect():
     return redirect(glob.config.discord_server)
+
 
 @frontend.route('/youtube')
 @frontend.route('/yt')
 async def youtube_redirect():
     return redirect(glob.config.youtube)
 
+
 @frontend.route('/twitter')
 async def twitter_redirect():
     return redirect(glob.config.twitter)
+
 
 @frontend.route('/instagram')
 @frontend.route('/ig')
 async def instagram_redirect():
     return redirect(glob.config.instagram)
 
+
 # profile customisation
 BANNERS_PATH = Path.cwd() / '.data/banners'
 BACKGROUND_PATH = Path.cwd() / '.data/backgrounds'
+
+
 @frontend.route('/banners/<user_id>')
 async def get_profile_banner(user_id: int):
     # Check if avatar exists
